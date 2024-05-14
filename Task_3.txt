@@ -1,0 +1,71 @@
+-- Создание таблицы Orders
+CREATE TABLE Orders 
+(
+id SERIAL PRIMARY KEY,
+order_id NUMERIC UNIQUE,
+customer_id NUMERIC,
+order_date DATE,
+total_amount NUMERIC
+);
+
+-- Добавление информации
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (1, 100, '2023-01-12', 300);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (2, 101, '2023-01-12', 500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (3, 102, '2023-01-15', 4000);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (4, 103, '2023-01-15', 4500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (5, 101, '2023-01-15', 3500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (6, 102, '2023-01-16', 1000);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (7, 104, '2023-02-02', 550);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (8, 105, '2023-02-03', 3000);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (9, 106, '2023-02-05', 4500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (10, 107, '2023-02-06', 1500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (11, 108, '2023-02-09', 1500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (12, 107, '2023-02-10', 2500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (13, 106, '2023-02-11', 900);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (14, 109, '2023-02-11', 5500);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (15, 110, '2023-02-12', 2000);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (16, 109, '2023-02-12', 200);
+INSERT INTO Orders (order_id, customer_id, order_date, total_amount) VALUES (17, 101, '2023-02-15', 100);
+
+-- Создание таблицы Customers
+CREATE TABLE Customers 
+(
+id SERIAL PRIMARY KEY,
+customer_id NUMERIC UNIQUE,
+name VARCHAR (100),
+email VARCHAR (100),
+city VARCHAR (100)
+);
+
+-- Добавление информации
+INSERT INTO Customers (customer_id , name, email, city) VALUES (100, 'John', 'ghh11@mail.ru', ‘Samara’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (101, 'Jane', 'kgl56@mail.ru', ‘Rostov’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (102, 'Alice', 'keoh123@mail.ru', ‘Kazan’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (103, 'Mike', 'asd456@mail.ru', ‘Samara’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (104, 'Josh', 'zxc78@mail.ru', ‘Tomsk’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (105, 'Anna', 'tyui147@mail.ru', ‘Moscow’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (106, 'Maks', 'lkjr258@mail.ru', ‘Kazan’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (107, 'Tomas', 'ert369@mail.ru', ‘Tomsk’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (108, 'Eva', 'poi951@mail.ru', ‘Moscow’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (109, 'Nicole', 'vhuyt753@mail.ru', ‘Kursk’);
+INSERT INTO Customers (customer_id , name, email, city) VALUES (110, 'Irina', 'Fjhf3265@mail.ru', ‘Samara’);
+
+--Выведите список клиентов (имя и email), которые совершили заказы в 2023 году.
+				
+SELECT DISTINCT(customers.name), customers.email FROM customers JOIN orders ON customers.customer_id = orders.customer_id WHERE EXTRACT (YEAR from order_date) = 2023;
+
+--Для каждого города выведите количество клиентов, которые совершили заказы.
+
+SELECT customers.city,  COUNT (DISTINCT orders.customer_id) AS cust_total FROM customers JOIN orders ON customers.customer_id = orders.customer_id GROUP BY customers.city;
+
+-- Для каждого месяца выведите общую сумму заказов.
+
+SELECT DATE_TRUNC('month', order_date) AS month, SUM(total_amount) AS total_sales FROM orders GROUP BY month ORDER BY month;
+
+--Найдите клиента с наибольшей общей суммой заказов и выведите его имя, email и общую сумму заказов.
+
+SELECT customers.name, customers.email, SUM(total_amount) AS total_sales FROM customers JOIN orders ON customers.customer_id = orders.customer_id GROUP BY customers.name, customers.email ORDER BY total_sales DESC LIMIT 1;
+
+--Найдите клиента, который сделал максимальное количество заказов в 2023 году, и выведите его имя, email и количество заказов.
+
+SELECT customers.name, customers.email, COUNT(order_id) AS total_orders FROM customers JOIN orders ON customers.customer_id = orders.customer_id WHERE EXTRACT (YEAR from order_date) = 2023 GROUP BY customers.name, customers.email ORDER BY total_orders DESC LIMIT 1;
